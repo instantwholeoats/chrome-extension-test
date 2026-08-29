@@ -1,4 +1,10 @@
-document.title = '🤔';
-document.getElementsByClassName('social-count')[0].text = '🤔';
-document.getElementsByClassName('social-count')[2].text = '😱';
-document.getElementsByClassName('social-count')[3].text = '😎';
+document.title = '🤔'
+
+const reactions = ['🤔', '😱', '😎']
+const counters = document.querySelectorAll('.social-count, .Counter')
+reactions.forEach((reaction, index) => {
+  const counter = counters[index]
+  if (counter) {
+    counter.textContent = reaction
+  }
+})
