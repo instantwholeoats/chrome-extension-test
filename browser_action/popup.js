@@ -1,15 +1,28 @@
-function send() {
-  const queryInfo = {
-    active: true,
-    windowId: chrome.windows.WINDOW_ID_CURRENT
-  };
-
-  chrome.tabs.query(queryInfo, (result) => {
-    const currentTab = result.shift();
-    chrome.tabs.sendMessage(currentTab.id, 'hayashi');
-  });
+function setDocumentTitle(title) {
+  document.title = title
 }
 
-window.addEventListener('DOMContentLoaded', function () {
-  document.querySelector('#send').addEventListener('click', send);
-});
+async function send() {
+  const status = document.querySelector('#status')
+  try {
+    const [currentTab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    })
+    if (!currentTab?.id) {
+      throw new Error('Active tab is unavailable')
+    }
+    await chrome.scripting.executeScript({
+      target: { tabId: currentTab.id },
+      func: setDocumentTitle,
+      args: ['hayashi']
+    })
+    status.textContent = 'Done'
+  } catch (error) {
+    status.textContent = `Unable to update this page: ${error.message}`
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('#send').addEventListener('click', send)
+})
